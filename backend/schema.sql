@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS reports (
   red_flags JSON NOT NULL,
   status VARCHAR(32) NOT NULL DEFAULT 'unverified',
   is_demo BOOLEAN NOT NULL DEFAULT FALSE,
+  nafdac_hotline VARCHAR(32) NOT NULL DEFAULT '0800-162-3322',
   device_id VARCHAR(128) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_reports_product FOREIGN KEY (product_id) REFERENCES products(id),
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS batch_verifications (
   batch_code VARCHAR(100) NOT NULL,
   expiry_date DATE NULL,
   verification_status ENUM('unverified', 'under_review', 'no_alert_recorded', 'alert_recorded') NOT NULL DEFAULT 'unverified',
+  nafdac_hotline VARCHAR(32) NOT NULL DEFAULT '0800-162-3322',
   nafdac_registration VARCHAR(100) NULL,
   guidance TEXT NOT NULL,
   source_url VARCHAR(2048) NULL,
@@ -58,6 +60,7 @@ CREATE TABLE IF NOT EXISTS producer_submissions (
   batch_code VARCHAR(100) NULL,
   contact_email VARCHAR(254) NULL,
   submission_status ENUM('received', 'under_review', 'review_complete') NOT NULL DEFAULT 'received',
+  nafdac_hotline VARCHAR(32) NOT NULL DEFAULT '0800-162-3322',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_submission_status (submission_status)
 );
@@ -92,18 +95,18 @@ INSERT IGNORE INTO checks (id, product_id, question, guidance, source_url, sort_
   (7, 2, 'Is the package seal intact?', 'Check for tears, leaks, or signs the pack was opened.', 'https://nafdac.gov.ng/', 3),
   (8, 2, 'Does the print look consistent across the pack?', 'Unusual print differences are a reason to seek more information.', 'https://nafdac.gov.ng/', 4);
 
-INSERT IGNORE INTO reports (id, product_id, market_area, red_flags, status, is_demo, device_id) VALUES
-  (1, 1, 'Abeokuta Central', JSON_ARRAY('Expiry date is difficult to read'), 'unverified', TRUE, 'demo-seed');
+INSERT IGNORE INTO reports (id, product_id, market_area, red_flags, status, is_demo, nafdac_hotline, device_id) VALUES
+  (1, 1, 'Abeokuta Central', JSON_ARRAY('Expiry date is difficult to read'), 'unverified', TRUE, '0800-162-3322', 'demo-seed');
 
 INSERT IGNORE INTO batch_verifications
-  (id, product_id, batch_code, expiry_date, verification_status, nafdac_registration, guidance, source_url)
+  (id, product_id, batch_code, expiry_date, verification_status, nafdac_hotline, nafdac_registration, guidance, source_url)
 VALUES
-  (1, 1, 'GBF-2608-A', '2027-08-31', 'unverified', NULL, 'No official batch result is available in this sample record. Contact NAFDAC to verify.', 'https://nafdac.gov.ng/');
+  (1, 1, 'GBF-2608-A', '2027-08-31', 'unverified', '0800-162-3322', NULL, 'No official batch result is available in this sample record. Contact NAFDAC at 0800-162-3322 to verify.', 'https://nafdac.gov.ng/');
 
 INSERT IGNORE INTO producer_submissions
-  (id, product_name, producer_name, nafdac_registration, batch_code, submission_status)
+  (id, product_name, producer_name, nafdac_registration, batch_code, submission_status, nafdac_hotline)
 VALUES
-  (1, 'Fortified maize cereal, 500 g', 'Green Basket Foods', NULL, 'GBF-2608-A', 'received');
+  (1, 'Fortified maize cereal, 500 g', 'Green Basket Foods', NULL, 'GBF-2608-A', 'received', '0800-162-3322');
 
 INSERT IGNORE INTO recall_audit_logs
   (id, product_id, batch_code, event_type, audit_status, summary, source_url, nafdac_hotline, is_demo)
